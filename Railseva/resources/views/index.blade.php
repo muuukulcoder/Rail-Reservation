@@ -106,12 +106,67 @@
 
     <!-- Search Box -->
     <div class="container mx-auto px-4 py-6 bg-white shadow-md rounded-lg -mt-16 relative z-10">
-        <form class="grid md:grid-cols-4 gap-4">
-            <input type="text" placeholder="From Station" class="p-3 border rounded" />
-            <input type="text" placeholder="To Station" class="p-3 border rounded" />
-            <input type="date" min="{{ date('Y-m-d') }}" class="p-3 border rounded" />
-            <button class="bg-orange-500 text-white p-3 rounded hover:bg-orange-600">Search Trains</button>
-        </form>
+       <form class="grid md:grid-cols-4 gap-4 max-w-6xl mx-auto items-end">
+
+    {{-- From & To Inputs --}}
+    <div x-data="stationForm()" class="grid gap-4 md:grid-cols-2 md:col-span-2">
+
+        {{-- From Station --}}
+        <div class="relative">
+            <input type="text" x-model="fromQuery" @input="search('from')" @focus="showFrom = true"
+                @click.away="showFrom = false" placeholder="From Station"
+                class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
+
+            <!-- Dropdown -->
+            <div x-show="showFrom" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
+                <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
+                <template x-for="station in filteredStations('from')" :key="station.code">
+                    <div @click="selectStation('from', station)"
+                        class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
+                        :class="{ 'opacity-50 pointer-events-none': station.code === to.code }">
+                        <span x-text="station.name"></span>
+                        <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        {{-- To Station --}}
+        <div class="relative">
+            <input type="text" x-model="toQuery" @input="search('to')" @focus="showTo = true"
+                @click.away="showTo = false" placeholder="To Station"
+                class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
+
+            <!-- Dropdown -->
+            <div x-show="showTo" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
+                <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
+                <template x-for="station in filteredStations('to')" :key="station.code">
+                    <div @click="selectStation('to', station)"
+                        class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
+                        :class="{ 'opacity-50 pointer-events-none': station.code === from.code }">
+                        <span x-text="station.name"></span>
+                        <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    {{-- Date Input --}}
+    <div>
+        <input type="date" min="{{ date('Y-m-d') }}"
+            class="w-full p-3 border rounded focus:outline-none min-h-[52px]" />
+    </div>
+
+    {{-- Search Button --}}
+    <div>
+        <button class="w-full bg-orange-500 text-white p-3 rounded hover:bg-orange-600 min-h-[52px]">
+            Search Trains
+        </button>
+    </div>
+
+</form>
+
     </div>
 
     <!-- Offers Section -->
@@ -185,6 +240,71 @@
         </div>
         <p class="text-center mt-6 text-xs text-gray-400">&copy; 2025 Trainmart. All rights reserved.</p>
     </footer>
+
+
+
+    <script>
+        function stationForm() {
+            return {
+                stations: [{
+                        name: 'New Delhi',
+                        code: 'NDLS'
+                    },
+                    {
+                        name: 'Howrah Jn',
+                        code: 'HWH'
+                    },
+                    {
+                        name: 'Lokmanya Tilak Term',
+                        code: 'LTT'
+                    },
+                    {
+                        name: 'Chennai Central',
+                        code: 'MAS'
+                    },
+                    {
+                        name: 'Ahmedabad Jn',
+                        code: 'ADI'
+                    },
+                    {
+                        name: 'Patna Jn',
+                        code: 'PNBE'
+                    },
+                ],
+                fromQuery: '',
+                toQuery: '',
+                from: {},
+                to: {},
+                showFrom: false,
+                showTo: false,
+
+                search(field) {
+                    if (field === 'from') this.showFrom = true;
+                    if (field === 'to') this.showTo = true;
+                },
+
+                filteredStations(field) {
+                    const query = field === 'from' ? this.fromQuery.toLowerCase() : this.toQuery.toLowerCase();
+                    return this.stations.filter(station =>
+                        station.name.toLowerCase().includes(query) || station.code.toLowerCase().includes(query)
+                    );
+                },
+
+                selectStation(field, station) {
+                    if (field === 'from') {
+                        this.from = station;
+                        this.fromQuery = `${station.code} - ${station.name}`;
+                        this.showFrom = false;
+                    } else {
+                        this.to = station;
+                        this.toQuery = `${station.code} - ${station.name}`;
+                        this.showTo = false;
+                    }
+                }
+            };
+        }
+    </script>
+
 </body>
 
 </html>
