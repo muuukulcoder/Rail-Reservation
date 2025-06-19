@@ -1,0 +1,1 @@
+Rail Reservation is a Laravel-based web application styled with Bootstrap CSS. This project includes key features such as booking and canceling tickets, generating PNR numbers, and checking PNR status. It's a simple yet functional system designed to simulate a basic railway reservation workflow.
