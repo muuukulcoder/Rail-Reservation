@@ -5,9 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trainseva|index</title>
+    <title>@yield('title', 'My App')</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- Laravel Vite -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <link rel="stylesheet" href="css/loading.css">
+    <script src="{{ asset('js/loading.js') }}" defer></script>
     <style>
         [x-cloak] {
             display: none !important;
@@ -16,6 +21,25 @@
 </head>
 
 <body class="bg-white font-sans text-gray-800">
+
+    {{-- Page Loading --}}
+    <div id="page-loading"
+        class="fixed top-0 bottom-0 left-0 right-0 z-[99999] flex items-center justify-center bg-white opacity-100 pointer-events-auto transition-opacity duration-500">
+        <div class="grid-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+
+
     <!-- Header -->
     <header
         class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-4 md:sticky              md:top-0 md:z-50">
@@ -45,7 +69,7 @@
                         Status</a>
                     <a href="#" class="block ">Running Status</a>
                     <a href="#" class="block ">Seat Availability</a>
-                    <a href="#" class="block ">Profile</a>
+                    <a href="/login" class="block ">Profile</a>
                 </nav>
             </div>
             <nav class="space-x-4 hidden md:block">
@@ -58,7 +82,7 @@
                 <a href="#"
                     class="relative inline-block transition-all duration-300 hover:text-yellow-300  hover:scale-105 block">Seat
                     Availability</a>
-                <a href="#"
+                <a href="/login"
                     class="relative inline-block transition-all duration-300 hover:text-yellow-300  hover:scale-105 block"><i
                         class="fa-solid fa-user"></i>&nbsp;&nbsp;
                 </a>
@@ -106,66 +130,66 @@
 
     <!-- Search Box -->
     <div class="container mx-auto px-4 py-6 bg-white shadow-md rounded-lg -mt-16 relative z-10">
-       <form class="grid md:grid-cols-4 gap-4 max-w-6xl mx-auto items-end">
+        <form action="/login" class="grid md:grid-cols-4 gap-4 max-w-6xl mx-auto items-end">
 
-    {{-- From & To Inputs --}}
-    <div x-data="stationForm()" class="grid gap-4 md:grid-cols-2 md:col-span-2">
+            {{-- From & To Inputs --}}
+            <div x-data="stationForm()" class="grid gap-4 md:grid-cols-2 md:col-span-2">
 
-        {{-- From Station --}}
-        <div class="relative">
-            <input type="text" x-model="fromQuery" @input="search('from')" @focus="showFrom = true"
-                @click.away="showFrom = false" placeholder="From Station"
-                class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
+                {{-- From Station --}}
+                <div class="relative">
+                    <input type="text" x-model="fromQuery" @input="search('from')" @focus="showFrom = true"
+                        @click.away="showFrom = false" placeholder="From Station"
+                        class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
 
-            <!-- Dropdown -->
-            <div x-show="showFrom" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
-                <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
-                <template x-for="station in filteredStations('from')" :key="station.code">
-                    <div @click="selectStation('from', station)"
-                        class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        :class="{ 'opacity-50 pointer-events-none': station.code === to.code }">
-                        <span x-text="station.name"></span>
-                        <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                    <!-- Dropdown -->
+                    <div x-show="showFrom" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
+                        <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
+                        <template x-for="station in filteredStations('from')" :key="station.code">
+                            <div @click="selectStation('from', station)"
+                                class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                :class="{ 'opacity-50 pointer-events-none': station.code === to.code }">
+                                <span x-text="station.name"></span>
+                                <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                            </div>
+                        </template>
                     </div>
-                </template>
-            </div>
-        </div>
+                </div>
 
-        {{-- To Station --}}
-        <div class="relative">
-            <input type="text" x-model="toQuery" @input="search('to')" @focus="showTo = true"
-                @click.away="showTo = false" placeholder="To Station"
-                class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
+                {{-- To Station --}}
+                <div class="relative">
+                    <input type="text" x-model="toQuery" @input="search('to')" @focus="showTo = true"
+                        @click.away="showTo = false" placeholder="To Station"
+                        class="w-full border rounded p-3 focus:outline-none min-h-[52px]" />
 
-            <!-- Dropdown -->
-            <div x-show="showTo" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
-                <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
-                <template x-for="station in filteredStations('to')" :key="station.code">
-                    <div @click="selectStation('to', station)"
-                        class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
-                        :class="{ 'opacity-50 pointer-events-none': station.code === from.code }">
-                        <span x-text="station.name"></span>
-                        <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                    <!-- Dropdown -->
+                    <div x-show="showTo" class="absolute z-50 mt-2 w-full bg-white shadow-lg rounded-lg" x-cloak>
+                        <div class="p-3 text-xs font-semibold text-gray-500">⭐ POPULAR STATIONS</div>
+                        <template x-for="station in filteredStations('to')" :key="station.code">
+                            <div @click="selectStation('to', station)"
+                                class="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                :class="{ 'opacity-50 pointer-events-none': station.code === from.code }">
+                                <span x-text="station.name"></span>
+                                <span class="font-semibold text-gray-600" x-text="station.code"></span>
+                            </div>
+                        </template>
                     </div>
-                </template>
+                </div>
             </div>
-        </div>
-    </div>
 
-    {{-- Date Input --}}
-    <div>
-        <input type="date" min="{{ date('Y-m-d') }}"
-            class="w-full p-3 border rounded focus:outline-none min-h-[52px]" />
-    </div>
+            {{-- Date Input --}}
+            <div>
+                <input type="date" min="{{ date('Y-m-d') }}"
+                    class="w-full p-3 border rounded focus:outline-none min-h-[52px]" />
+            </div>
 
-    {{-- Search Button --}}
-    <div>
-        <button class="w-full bg-orange-500 text-white p-3 rounded hover:bg-orange-600 min-h-[52px]">
-            Search Trains
-        </button>
-    </div>
+            {{-- Search Button --}}
+            <div>
+                <button class="w-full bg-orange-500 text-white p-3 rounded hover:bg-orange-600 min-h-[52px]">
+                    Search Trains
+                </button>
+            </div>
 
-</form>
+        </form>
 
     </div>
 
@@ -304,6 +328,7 @@
             };
         }
     </script>
+
 
 </body>
 
