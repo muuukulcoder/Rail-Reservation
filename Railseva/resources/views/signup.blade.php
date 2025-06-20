@@ -8,8 +8,9 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background: linear-gradient(135deg, #3b82f6, #9333ea);
+        .signup {
+            background: #eeedf7;
+            background: linear-gradient(90deg, rgba(238, 237, 247, 1) 0%, rgba(60, 60, 189, 1) 56%, rgba(60, 60, 189, 1) 71%, rgba(60, 183, 189, 1) 97%);
         }
 
         .fade-slide {
@@ -33,11 +34,11 @@
 <body class="min-h-screen flex items-center justify-center">
 
     <div
-        class="w-full max-w-5xl bg-white/10 backdrop-blur-lg text-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row fade-slide">
+        class="signup w-full max-w-5xl  text-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row fade-slide">
 
         <!-- Left: Railway Illustration -->
         <div class="hidden md:flex w-1/2 items-center justify-center p-6 bg-white/5">
-            <img src="{{asset('images/namste1.png')}}" alt="Train Illustration"
+            <img src="{{ asset('images/namste1.png') }}" alt="Train Illustration"
                 class="w-full h-auto max-w-sm animate-bounce-slow" />
         </div>
 
@@ -45,7 +46,11 @@
         <div class="w-full md:w-1/2 p-8">
             <h2 class="text-3xl font-bold mb-6 text-center">Create Railseva Account</h2>
 
-            <form action="#" method="POST" class="space-y-5">
+            <form action="{{ route('users.store') }}" method="POST" class="space-y-5">
+                @csrf
+               
+
+
                 <div>
                     <label class="block text-sm mb-1">Full Name</label>
                     <input type="text" name="name"
