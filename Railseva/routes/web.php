@@ -14,6 +14,6 @@ Route::view('/login','login');
 Route::view('/loading', 'loading');
 Route::view('/signup','signup');
 
-Route::post('/login',[UserController::class,'signup'])->name('users.store');
+Route::post('/signup',[UserController::class,'signup'])->name('users.store');
 
 

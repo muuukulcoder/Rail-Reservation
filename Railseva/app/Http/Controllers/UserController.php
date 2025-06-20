@@ -35,7 +35,10 @@ class UserController extends Controller
         
         $user->save();
         if($user){
-            return "Signup Successfully!!!";
+           return redirect('/login')->with('success', 'Signup Successfully Your userid: ' . $userid);
+        }
+        else{
+            return view('signup');
         }
 
     }
